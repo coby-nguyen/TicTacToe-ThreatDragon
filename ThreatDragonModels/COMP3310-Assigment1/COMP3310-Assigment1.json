@@ -617,15 +617,6 @@
             }
           }
         ]
-      },
-      {
-        "id": 1,
-        "title": "demo ai",
-        "diagramType": "STRIDE",
-        "placeholder": "New STRIDE diagram description",
-        "thumbnail": "./public/content/images/thumbnail.stride.jpg",
-        "version": "2.6.0",
-        "cells": []
       }
     ],
     "diagramTop": 2,
