@@ -1,4 +1,5 @@
 {
+  "version": "2.6.0",
   "summary": {
     "title": "TicTacToe Application – STRIDE Threat Model",
     "owner": "Security Review",
