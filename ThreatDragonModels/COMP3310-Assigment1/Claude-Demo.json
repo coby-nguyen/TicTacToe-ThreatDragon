@@ -1,7 +1,7 @@
 {
   "version": "2.6.0",
   "summary": {
-    "title": "TicTacToe Application – STRIDE Threat Model",
+    "title": "Claude-Demo",
     "owner": "Security Review",
     "description": "Threat model for the TicTacToe Python application covering user authentication, game persistence, database interactions, and file system operations. Analysis is at the functionality level, covering data flows between functions and external artifacts (SQLite DB, savegame JSON files).",
     "id": "tictactoe-stride-v1"
