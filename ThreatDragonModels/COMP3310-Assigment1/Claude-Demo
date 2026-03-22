@@ -1,0 +1,348 @@
+{
+  "summary": {
+    "title": "TicTacToe Application – STRIDE Threat Model",
+    "owner": "Security Review",
+    "description": "Threat model for the TicTacToe Python application covering user authentication, game persistence, database interactions, and file system operations. Analysis is at the functionality level, covering data flows between functions and external artifacts (SQLite DB, savegame JSON files).",
+    "id": "tictactoe-stride-v1"
+  },
+  "detail": {
+    "contributors": [],
+    "diagrams": [
+      {
+        "title": "TicTacToe Data Flow Diagram",
+        "diagramType": "STRIDE",
+        "thumbnail": "./thumbnail.jpg",
+        "diagramJson": {
+          "cells": [
+
+            {
+              "type": "tm.Process",
+              "id": "proc-auth",
+              "position": { "x": 320, "y": 120 },
+              "size": { "width": 160, "height": 60 },
+              "attrs": { "text": { "text": "authenticate_user /\ncreate_account" } },
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Spoofing – MD5 password hashing",
+                  "type": "Spoofing",
+                  "description": "Passwords are hashed with MD5 (no salt), making them trivially crackable via rainbow tables. An attacker with DB read access can recover plaintext credentials and impersonate any user.",
+                  "mitigation": "Replace MD5 with bcrypt, scrypt, or Argon2 with a per-user random salt."
+                },
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Tampering – No login rate limiting",
+                  "type": "Tampering",
+                  "description": "authenticate_user performs no lockout or delay, enabling unlimited brute-force attempts against any account.",
+                  "mitigation": "Implement account lockout or exponential backoff after N failed attempts."
+                },
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Information Disclosure – Error message leaks existence",
+                  "type": "InformationDisclosure",
+                  "description": "The error path distinguishes 'invalid credentials' from 'username not found' implicitly (DB lookup returns None vs. hash mismatch), which can be probed to enumerate valid usernames.",
+                  "mitigation": "Return a single generic error message regardless of failure reason."
+                }
+              ]
+            },
+
+            {
+              "type": "tm.Process",
+              "id": "proc-hash",
+              "position": { "x": 320, "y": 240 },
+              "size": { "width": 160, "height": 60 },
+              "attrs": { "text": { "text": "_hash_password" } },
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "Critical",
+                  "title": "Spoofing – MD5 is cryptographically broken",
+                  "type": "Spoofing",
+                  "description": "MD5 produces collisions and has no salting, meaning pre-computed rainbow tables can reverse any stored hash. This is the single most severe vulnerability in the application.",
+                  "mitigation": "Use bcrypt (cost ≥12) or Argon2id. Store the salt with the hash in the users table."
+                }
+              ]
+            },
+
+            {
+              "type": "tm.Process",
+              "id": "proc-move",
+              "position": { "x": 320, "y": 360 },
+              "size": { "width": 160, "height": 60 },
+              "attrs": { "text": { "text": "make_move /\non_button_click" } },
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "Low",
+                  "title": "Tampering – Client-side only validation",
+                  "type": "Tampering",
+                  "description": "make_move validates position 0–8 and occupancy, but these checks run exclusively in the local process. A modified client could bypass button-click guards and inject arbitrary board states before save.",
+                  "mitigation": "For a networked version, validate game state server-side. For local play, this is low risk."
+                },
+                {
+                  "status": "Open",
+                  "severity": "Low",
+                  "title": "Repudiation – No move audit log",
+                  "type": "Repudiation",
+                  "description": "Individual moves are not recorded in the database; only the final winner is stored. Neither player can prove or dispute the sequence of play after the fact.",
+                  "mitigation": "Log each move (player, position, timestamp) to the games table for dispute resolution."
+                }
+              ]
+            },
+
+            {
+              "type": "tm.Process",
+              "id": "proc-save",
+              "position": { "x": 560, "y": 240 },
+              "size": { "width": 160, "height": 60 },
+              "attrs": { "text": { "text": "save_game /\nload_game" } },
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Tampering – Savegame JSON not integrity-checked",
+                  "type": "Tampering",
+                  "description": "JSON files in the savegames/ folder are plain text, unsigned, and unencrypted. Any OS user can edit a .json file to change board state, player names, or current_player before it is loaded, effectively cheating or hijacking another player's session.",
+                  "mitigation": "Sign savegame files with an HMAC (keyed with an application secret) and verify the signature on load_game."
+                },
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Tampering – Path traversal via game_id",
+                  "type": "Tampering",
+                  "description": "load_game constructs the file path as os.path.join(savegame_folder, f'{game_id}.json') without sanitising game_id. A crafted ID such as '../../etc/passwd' could read arbitrary files outside savegames/.",
+                  "mitigation": "Validate that game_id matches UUID format (uuid.UUID(game_id, version=4)) before constructing the path. Use pathlib.Path.resolve() and assert the result is inside savegame_folder."
+                },
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Information Disclosure – Savegames readable by all OS users",
+                  "type": "InformationDisclosure",
+                  "description": "The savegames/ directory is created with default umask permissions (world-readable on many systems), exposing player usernames and game state to any local user.",
+                  "mitigation": "Create the savegames/ directory with mode 0o700 so only the owning user can read it."
+                },
+                {
+                  "status": "Open",
+                  "severity": "Low",
+                  "title": "Denial of Service – Savegame directory not size-limited",
+                  "type": "DenialOfService",
+                  "description": "Each save_game call creates a new UUID-named file with no cleanup. A malicious or buggy client could fill disk with savegame files.",
+                  "mitigation": "Enforce a per-user savegame quota and delete or overwrite the previous save when a new one is created."
+                }
+              ]
+            },
+
+            {
+              "type": "tm.Store",
+              "id": "store-db",
+              "position": { "x": 80, "y": 240 },
+              "size": { "width": 160, "height": 60 },
+              "attrs": { "text": { "text": "tictactoe.db\n(SQLite)" } },
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Tampering – DB file unencrypted at rest",
+                  "type": "Tampering",
+                  "description": "tictactoe.db stores all user credentials (MD5 hashes) and game records in a plain SQLite file with default OS permissions. Any user with file system access can read or modify it with standard SQLite tools.",
+                  "mitigation": "Use SQLCipher for encrypted SQLite, or restrict file permissions to 0o600 (owner read/write only)."
+                },
+                {
+                  "status": "Open",
+                  "severity": "Critical",
+                  "title": "Spoofing – Credential theft from DB file",
+                  "type": "Spoofing",
+                  "description": "Because passwords are stored as unsalted MD5 hashes, copying tictactoe.db and running a GPU hash-cracker against it will recover all plaintext passwords within minutes.",
+                  "mitigation": "Strong hashing (bcrypt/Argon2) is the primary control; file-level encryption is a defence-in-depth layer."
+                },
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Elevation of Privilege – SQLite no access control",
+                  "type": "ElevationOfPrivilege",
+                  "description": "SQLite has no user/role system. Any process that can open the .db file can execute arbitrary SQL, including DROP TABLE or UPDATE wins/losses to manipulate the scoreboard.",
+                  "mitigation": "Restrict OS-level file permissions. For multi-user deployment, migrate to a server-side DBMS with access controls."
+                }
+              ]
+            },
+
+            {
+              "type": "tm.Store",
+              "id": "store-savegames",
+              "position": { "x": 560, "y": 380 },
+              "size": { "width": 160, "height": 60 },
+              "attrs": { "text": { "text": "savegames/\n*.json files" } },
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Tampering – Plain-text savegame manipulation",
+                  "type": "Tampering",
+                  "description": "Savegame JSON files contain player usernames and board state in clear text. Editing a file alters game outcomes and player attribution without any detection.",
+                  "mitigation": "HMAC-sign each file. Reject loads where the signature does not verify."
+                },
+                {
+                  "status": "Open",
+                  "severity": "Low",
+                  "title": "Repudiation – No creation timestamp validated on load",
+                  "type": "Repudiation",
+                  "description": "The timestamp field in the JSON is advisory only; load_game does not validate it. An old save can be replayed or a future timestamp forged with no detection.",
+                  "mitigation": "Include timestamp in the HMAC scope and log load events to the DB."
+                }
+              ]
+            },
+
+            {
+              "type": "tm.Actor",
+              "id": "actor-player1",
+              "position": { "x": 80, "y": 80 },
+              "size": { "width": 120, "height": 60 },
+              "attrs": { "text": { "text": "Player X\n(authenticated)" } },
+              "threats": []
+            },
+
+            {
+              "type": "tm.Actor",
+              "id": "actor-player2",
+              "position": { "x": 560, "y": 80 },
+              "size": { "width": 120, "height": 60 },
+              "attrs": { "text": { "text": "Player O\n(authenticated)" } },
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Spoofing – Opponent password entered in plaintext via dialog",
+                  "type": "Spoofing",
+                  "description": "show_opponent_dialog asks for the opponent's password via a tkinter simpledialog. The password travels through the tkinter event loop in memory as a Python str. On shared machines, memory dumps or shoulder-surfing are realistic vectors.",
+                  "mitigation": "In a networked version, authenticate each player independently via their own session. For local play, display clear warnings about entering credentials on shared machines."
+                }
+              ]
+            },
+
+            {
+              "type": "tm.Process",
+              "id": "proc-end",
+              "position": { "x": 80, "y": 360 },
+              "size": { "width": 160, "height": 60 },
+              "attrs": { "text": { "text": "end_game /\nget_scoreboard" } },
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Tampering – Scoreboard manipulation via DB edit",
+                  "type": "Tampering",
+                  "description": "end_game writes wins/losses to the users table. Because the SQLite file has no access controls, a local user can open the DB and manually update their win count.",
+                  "mitigation": "File permissions on tictactoe.db (0o600) reduce risk. Server-side DB would eliminate it."
+                },
+                {
+                  "status": "Open",
+                  "severity": "Low",
+                  "title": "Repudiation – game_id may be None when end_game is called",
+                  "type": "Repudiation",
+                  "description": "If end_game is reached without a prior save_game call, game_id is None and a new UUID is generated. This creates a games record that cannot be matched to a savegame file, weakening the audit trail.",
+                  "mitigation": "Always assign game_id at game start (play_game already does this) and assert it is non-None in end_game."
+                }
+              ]
+            },
+
+            {
+              "type": "tm.Boundary",
+              "id": "boundary-trust-ui",
+              "position": { "x": 240, "y": 60 },
+              "attrs": { "text": { "text": "UI / Application Logic boundary" } }
+            },
+            {
+              "type": "tm.Boundary",
+              "id": "boundary-trust-fs",
+              "position": { "x": 490, "y": 200 },
+              "attrs": { "text": { "text": "Application / File System boundary" } }
+            },
+            {
+              "type": "tm.Boundary",
+              "id": "boundary-trust-db",
+              "position": { "x": 60, "y": 200 },
+              "attrs": { "text": { "text": "Application / SQLite DB boundary" } }
+            },
+
+            {
+              "type": "tm.Flow",
+              "id": "flow-1",
+              "source": { "id": "actor-player1" },
+              "target": { "id": "proc-auth" },
+              "attrs": { "text": { "text": "username + password (plaintext)" } },
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Information Disclosure – Password in tkinter memory",
+                  "type": "InformationDisclosure",
+                  "description": "The plaintext password lives as a Python string in process memory from the simpledialog call through _hash_password. On a shared machine, a memory dump could expose it.",
+                  "mitigation": "Zero out the password string immediately after hashing. Python's str is immutable so consider using bytearray for passwords."
+                }
+              ]
+            },
+            {
+              "type": "tm.Flow",
+              "id": "flow-2",
+              "source": { "id": "proc-auth" },
+              "target": { "id": "proc-hash" },
+              "attrs": { "text": { "text": "plaintext password" } },
+              "threats": []
+            },
+            {
+              "type": "tm.Flow",
+              "id": "flow-3",
+              "source": { "id": "proc-hash" },
+              "target": { "id": "store-db" },
+              "attrs": { "text": { "text": "MD5 hash → SQL INSERT/SELECT" } },
+              "threats": []
+            },
+            {
+              "type": "tm.Flow",
+              "id": "flow-4",
+              "source": { "id": "proc-save" },
+              "target": { "id": "store-savegames" },
+              "attrs": { "text": { "text": "JSON write (board, players, UUID)" } },
+              "threats": []
+            },
+            {
+              "type": "tm.Flow",
+              "id": "flow-5",
+              "source": { "id": "store-savegames" },
+              "target": { "id": "proc-save" },
+              "attrs": { "text": { "text": "JSON read (unsanitised game_id)" } },
+              "threats": []
+            },
+            {
+              "type": "tm.Flow",
+              "id": "flow-6",
+              "source": { "id": "proc-end" },
+              "target": { "id": "store-db" },
+              "attrs": { "text": { "text": "UPDATE wins/losses, INSERT game record" } },
+              "threats": []
+            },
+            {
+              "type": "tm.Flow",
+              "id": "flow-7",
+              "source": { "id": "actor-player2" },
+              "target": { "id": "proc-auth" },
+              "attrs": { "text": { "text": "opponent username + password (plaintext)" } },
+              "threats": []
+            },
+            {
+              "type": "tm.Flow",
+              "id": "flow-8",
+              "source": { "id": "proc-move" },
+              "target": { "id": "proc-end" },
+              "attrs": { "text": { "text": "winner / tie signal" } },
+              "threats": []
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
