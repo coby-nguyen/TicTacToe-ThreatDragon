@@ -648,6 +648,7 @@
             },
             "visible": true,
             "shape": "process",
+            "zIndex": 6,
             "ports": {
               "groups": {
                 "top": {
@@ -731,7 +732,6 @@
               ]
             },
             "id": "07c0abb7-ee4d-446c-b550-a240893a7b9e",
-            "zIndex": 6,
             "data": {
               "type": "tm.Process",
               "name": "authenticate_user",
@@ -768,6 +768,7 @@
             },
             "visible": true,
             "shape": "actor",
+            "zIndex": 7,
             "ports": {
               "groups": {
                 "top": {
@@ -851,7 +852,6 @@
               ]
             },
             "id": "75ad6ee7-d659-4bd8-a50f-9553c28c99d2",
-            "zIndex": 7,
             "data": {
               "type": "tm.Actor",
               "name": "New user",
@@ -1932,6 +1932,7 @@
             },
             "visible": true,
             "shape": "process",
+            "zIndex": 11,
             "ports": {
               "groups": {
                 "top": {
@@ -2015,7 +2016,6 @@
               ]
             },
             "id": "bd3105ae-9836-40f3-860c-e92693e11592",
-            "zIndex": 11,
             "data": {
               "type": "tm.Process",
               "name": "_hash_password",
@@ -2052,6 +2052,7 @@
             },
             "visible": true,
             "shape": "process",
+            "zIndex": 12,
             "ports": {
               "groups": {
                 "top": {
@@ -2135,7 +2136,6 @@
               ]
             },
             "id": "d48564bc-6d3d-4b92-a11a-f435ea43f5cb",
-            "zIndex": 12,
             "data": {
               "type": "tm.Process",
               "name": "end_game",
@@ -2172,6 +2172,7 @@
             },
             "visible": true,
             "shape": "process",
+            "zIndex": 13,
             "ports": {
               "groups": {
                 "top": {
@@ -2255,7 +2256,6 @@
               ]
             },
             "id": "7f19f2ad-dd5a-4820-b40e-48dba65246aa",
-            "zIndex": 13,
             "data": {
               "type": "tm.Process",
               "name": "on_button_click",
@@ -2292,6 +2292,7 @@
             },
             "visible": true,
             "shape": "process",
+            "zIndex": 14,
             "ports": {
               "groups": {
                 "top": {
@@ -2375,7 +2376,6 @@
               ]
             },
             "id": "f4393976-b0f4-409c-b5a5-d5be598ac546",
-            "zIndex": 14,
             "data": {
               "type": "tm.Process",
               "name": "get_scoreboard",
@@ -2412,6 +2412,7 @@
             },
             "visible": true,
             "shape": "process",
+            "zIndex": 15,
             "ports": {
               "groups": {
                 "top": {
@@ -2495,7 +2496,6 @@
               ]
             },
             "id": "c0715279-8f1e-4e81-a7a9-da3cd1effb9c",
-            "zIndex": 15,
             "data": {
               "type": "tm.Process",
               "name": "save_game",
@@ -2532,6 +2532,7 @@
             },
             "visible": true,
             "shape": "process",
+            "zIndex": 16,
             "ports": {
               "groups": {
                 "top": {
@@ -2615,7 +2616,6 @@
               ]
             },
             "id": "41adad7c-1c90-4cb0-a76e-f44fafee71bd",
-            "zIndex": 16,
             "data": {
               "type": "tm.Process",
               "name": "load_game",
