@@ -512,8 +512,8 @@
           },
           {
             "position": {
-              "x": 1420,
-              "y": -249.9999999999999
+              "x": 1470,
+              "y": -390
             },
             "size": {
               "width": 80,
@@ -1295,12 +1295,7 @@
               "cell": "41a04d70-8901-4e63-a018-d27c5f4c87eb",
               "port": "dd0d16c3-8e36-44de-a7ea-a393331a942e"
             },
-            "vertices": [
-              {
-                "x": 1500,
-                "y": -140
-              }
-            ]
+            "vertices": []
           },
           {
             "shape": "flow",
@@ -2055,8 +2050,8 @@
           },
           {
             "position": {
-              "x": 1260,
-              "y": -150
+              "x": 1250,
+              "y": -260
             },
             "size": {
               "width": 160,
@@ -2311,11 +2306,11 @@
             "id": "f48e5dd7-ea43-4ff6-9b65-b03d6ee9b6f1",
             "source": {
               "cell": "8101c828-ce70-4acc-a535-35f040f5d65d",
-              "port": "1b9b2cea-80f7-450b-899c-2394edea59e8"
+              "port": "dd0d16c3-8e36-44de-a7ea-a393331a942e"
             },
             "target": {
               "cell": "07c0abb7-ee4d-446c-b550-a240893a7b9e",
-              "port": "8c9c0171-d3e7-4ed3-ac48-a7573b6090bd"
+              "port": "a63213cf-5be9-40cc-91b1-b4514ec653d8"
             },
             "vertices": []
           }
