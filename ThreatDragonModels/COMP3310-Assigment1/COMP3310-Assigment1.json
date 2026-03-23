@@ -1025,58 +1025,6 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "Read user credentials",
-              "description": "",
-              "outOfScope": false,
-              "isTrustBoundary": false,
-              "reasonOutOfScope": "",
-              "hasOpenThreats": false,
-              "isBidirectional": false,
-              "isEncrypted": false,
-              "isPublicNetwork": false,
-              "protocol": "",
-              "threats": [],
-              "trustBoundaryIds": []
-            },
-            "labels": [
-              "Read user credentials"
-            ],
-            "id": "19995ce5-fbf3-4d73-8485-fc7f87f95b34",
-            "source": {
-              "cell": "b26643a5-c298-49da-882c-31b91d60f907",
-              "port": "59eb0921-3395-451e-afa0-1dbb8c968c52"
-            },
-            "target": {
-              "cell": "41a04d70-8901-4e63-a018-d27c5f4c87eb",
-              "port": "dd0d16c3-8e36-44de-a7ea-a393331a942e"
-            },
-            "vertices": [
-              {
-                "x": 1490,
-                "y": -160
-              }
-            ]
-          },
-          {
-            "shape": "flow",
-            "attrs": {
-              "line": {
-                "stroke": "#333333",
-                "targetMarker": {
-                  "name": "block"
-                },
-                "sourceMarker": {
-                  "name": ""
-                },
-                "strokeDasharray": null
-              }
-            },
-            "width": 200,
-            "height": 100,
-            "zIndex": 10,
-            "connector": "smooth",
-            "data": {
-              "type": "tm.Flow",
               "name": "Desired Username",
               "description": "",
               "outOfScope": false,
@@ -1374,7 +1322,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "Data Flow",
+              "name": "Position (0–8)",
               "description": "",
               "outOfScope": false,
               "isTrustBoundary": false,
@@ -1388,7 +1336,7 @@
               "trustBoundaryIds": []
             },
             "labels": [
-              "Data Flow"
+              "Position (0–8)"
             ],
             "id": "c8160bc0-a830-4134-ae6f-04ad3b837dcf",
             "source": {
@@ -1468,7 +1416,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "Data Flow",
+              "name": "Winner username/None (tie)",
               "description": "",
               "outOfScope": false,
               "isTrustBoundary": false,
@@ -1482,7 +1430,7 @@
               "trustBoundaryIds": []
             },
             "labels": [
-              "Data Flow"
+              "Winner username/None (tie)"
             ],
             "id": "1aa29494-0e19-4c2d-b5ae-aaa68745f120",
             "source": {
@@ -1682,6 +1630,58 @@
               "port": "8992b67e-a065-4452-a72e-60e4d015c0f5"
             },
             "vertices": []
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": ""
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "User credentials",
+              "description": "",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "isBidirectional": false,
+              "isEncrypted": false,
+              "isPublicNetwork": false,
+              "protocol": "",
+              "threats": [],
+              "trustBoundaryIds": []
+            },
+            "labels": [
+              "User credentials"
+            ],
+            "id": "1aba7d24-77c5-4199-b14b-923ab753adf4",
+            "source": {
+              "cell": "41a04d70-8901-4e63-a018-d27c5f4c87eb",
+              "port": "dd0d16c3-8e36-44de-a7ea-a393331a942e"
+            },
+            "target": {
+              "cell": "b26643a5-c298-49da-882c-31b91d60f907",
+              "port": "59eb0921-3395-451e-afa0-1dbb8c968c52"
+            },
+            "vertices": [
+              {
+                "x": 1520,
+                "y": -140
+              }
+            ]
           },
           {
             "position": {
@@ -2588,6 +2588,7 @@
             },
             "visible": true,
             "shape": "process",
+            "zIndex": 23,
             "ports": {
               "groups": {
                 "top": {
@@ -2671,7 +2672,6 @@
               ]
             },
             "id": "70482c80-84e4-4108-8b7f-9e3b0b25feca",
-            "zIndex": 23,
             "data": {
               "type": "tm.Process",
               "name": "make_move",
@@ -2708,6 +2708,7 @@
             },
             "visible": true,
             "shape": "process",
+            "zIndex": 24,
             "ports": {
               "groups": {
                 "top": {
@@ -2791,7 +2792,6 @@
               ]
             },
             "id": "f95c4e0c-e1e6-4901-9671-248ce43abb23",
-            "zIndex": 24,
             "data": {
               "type": "tm.Process",
               "name": "is_winner\nOR\nis_board_full",
@@ -2828,6 +2828,7 @@
             },
             "visible": true,
             "shape": "process",
+            "zIndex": 25,
             "ports": {
               "groups": {
                 "top": {
@@ -2911,7 +2912,6 @@
               ]
             },
             "id": "cb24b135-cc59-4379-a8c0-5750c4e044a4",
-            "zIndex": 25,
             "data": {
               "type": "tm.Process",
               "name": "_hash_password",
@@ -2972,127 +2972,7 @@
               "cell": "07c0abb7-ee4d-446c-b550-a240893a7b9e",
               "port": "aa470d16-9313-46f6-8e39-628e80fb9cfa"
             },
-            "vertices": [],
-            "tools": {
-              "items": [
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead",
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead",
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead",
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead",
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead",
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead",
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead",
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead",
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead",
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead",
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead",
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead",
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead",
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead",
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead",
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead",
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead",
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead",
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead",
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead",
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead",
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead",
-                "boundary",
-                "button-remove",
-                "vertices",
-                "source-arrowhead",
-                "target-arrowhead"
-              ],
-              "name": null
-            }
+            "vertices": []
           }
         ]
       }
